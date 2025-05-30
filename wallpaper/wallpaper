@@ -1,0 +1,53 @@
+#!/bin/sh
+
+current_dir=$(xdg-user-dir PICTURES || echo "$HOME/Pictures")
+
+list_items() {
+	for item in "$current_dir"/*; do
+        basename "$item"
+    done
+}
+
+while true; do
+    choice=$(list_items | bemenu -c \
+        -i \
+        -l 10 \
+        -p "󰸉 wallpaper" \
+        -P "󰌑" \
+        -B 2 \
+        -W 0.45 \
+        -H 30 \
+        --cw 2 \
+        --ch 20 \
+        --fn "FantasqueSansMNerdFontPropo 13" \
+        --nb "#282828" \
+        --nf "#fbf1c7" \
+        --ab "#1d2021" \
+        --af "#fbf1c7" \
+        --tb "#1d2021" \
+        --cf "#fbf1c7" \
+        --tf "#fbf1c7" \
+        --fb "#1d2021" \
+        --ff "#fbf1c7" \
+        --hb "#689d6a" \
+        --hf "#282828" \
+        --bdr "#689d6a")
+
+    if [ -z "$choice" ]; then
+        echo "Invalid or canceled option."
+        exit 1
+    fi
+
+    selected_path="$current_dir/$choice"
+
+    if [ -d "$selected_path" ]; then
+        current_dir="$selected_path"
+    elif [ -f "$selected_path" ]; then
+        feh --bg-scale "$selected_path" 
+       	ln -sf "$selected_path" ~/wallpaper
+
+		exit 0
+    else
+        echo "Invalid option."
+    fi
+done
