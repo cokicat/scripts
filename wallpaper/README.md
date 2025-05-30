@@ -5,6 +5,6 @@ Choose an image from `~/Pictures` with [bemenu](https://github.com/Cloudef/bemen
 ## Dependencies
 Make sure that the `feh` package is installed on your distro.
 
-# Usage  
+## Usage  
 In your WM's config file, run `feh --bg-scale ~/wallpaper` at startup.
 
