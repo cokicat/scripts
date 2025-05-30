@@ -1,4 +1,4 @@
-# Launch X11 session
+# Start X11 session
 Launch a X11 session with `startx` from a tty.
 
 ## Usage
