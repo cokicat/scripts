@@ -10,7 +10,7 @@ Make sure to install the `php-curl` package on your distro to enable the PHP cUR
 **Warning:** You must specify your Telegram bot token and chat ID:
 ```php
 	$token = "<telegram_bot_token>"; // change this
-    $chat_id = "<telegram_chat_id>"; // change this
+	$chat_id = "<telegram_chat_id>"; // change this
 ```
 
 ## Usage
