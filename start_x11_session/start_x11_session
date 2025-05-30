@@ -1,0 +1,53 @@
+#!/bin/bash
+
+paths=()
+wms=()
+LAST_WM_PATH="$HOME/.last_wm"
+if [[ -f "$LAST_WM_PATH" ]]; then
+	read -r DEFAULT <  "$LAST_WM_PATH"
+else
+	DEFAULT=0
+fi
+
+for file in /usr/share/xsessions/*.desktop; do
+	if [ -f "$file" ]; then
+		exec=$(grep -E "^Exec=" "$file")
+		if [ -n "$exec" ]; then
+			bin=${exec#Exec=}
+			path=$(which "$bin")
+			paths+=("$path")
+		fi
+
+		name=$(grep -E "^Name=" "$file")
+		if [ -n "$name" ]; then
+			wm=${name#Name=}
+			wms+=("$wm")
+		fi
+	fi
+done
+wms+=("tty")
+
+for i in "${!wms[@]}"; do
+	echo "[$i] ${wms[$i]}"
+done
+
+while true; do
+	read -p "Select [$DEFAULT]: " selected
+	
+	if [ -z "$selected" ]; then
+		selected=$DEFAULT
+		break
+	fi
+
+	if [[ "$selected" =~ ^-?[0-9]+$ ]] && [ "$selected" -ge 0 ] && [ "$selected" -lt "${#wms[@]}" ]; then
+		break
+	fi
+done
+
+echo "$selected" > $LAST_WM_PATH
+
+if [[ "${wms[$selected]}" == "tty" ]]; then
+	exit
+else
+	startx "${paths[$selected]}"
+fi
