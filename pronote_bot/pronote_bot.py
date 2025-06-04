@@ -52,12 +52,12 @@ def is_new_grade(grade):
 	global last_grade_average
 
 	if grade.subject.name != last_grade_subject_name and grade.date != last_grade_date and grade.average != last_grade_average: # i know it's shit but `grade.id` is reseted after `session_check()`
-	last_grade_subject_name = grade.subject.name
-	last_grade_date = grade.date
-	last_grade_average = grade.average
+		last_grade_subject_name = grade.subject.name
+		last_grade_date = grade.date
+		last_grade_average = grade.average
 
 		return True
-	
+
 	return False
 
 def get_subject_emoji(subject_name):
