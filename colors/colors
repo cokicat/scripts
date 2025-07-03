@@ -1,0 +1,56 @@
+#!/bin/sh
+
+RESET='\033[0m'
+
+BLACK='\033[30m'
+RED='\033[31m'
+GREEN='\033[32m'
+YELLOW='\033[33m'
+BLUE='\033[34m'
+PURPLE='\033[35m'
+CYAN='\033[36m'
+WHITE='\033[37m'
+
+LBLACK='\033[90m'
+LRED='\033[91m'
+LGREEN='\033[92m'
+LYELLOW='\033[93m'
+LBLUE='\033[94m'
+LPURPLE='\033[95m'
+LCYAN='\033[96m'
+LWHITE='\033[97m'
+
+show_help() {
+	cat << EOF
+Display ANSI colors with their corresponding color codes.
+
+Usage: ${0##*/} [options]
+
+Options:
+  -h, --help    Show this help and exit.
+  -s, --simple  Only display colored blocks.
+EOF
+}
+
+show_colors() {
+	echo -e "$BLACK""30|BLACK   $RED""31|RED     $GREEN""32|GREEN   $YELLOW""33|YELLOW  $BLUE""34|BLUE    $PURPLE""35|PURPLE  $CYAN""36|CYAN    $WHITE""37|WHITE  "
+	echo -e "$BLACK███████████$RED███████████$GREEN███████████$YELLOW███████████$BLUE███████████$PURPLE███████████$CYAN███████████$WHITE███████████"
+	echo -e "$LBLACK""90|LBLACK  $LRED""91|LRED    $LGREEN""92|LGREEN  $LYELLOW""93|LYELLOW $LBLUE""34|LBLUE   $LPURPLE""95|LPURPLE $LCYAN""96|LCYAN   $LWHITE""97|LWHITE  "
+	echo -e "$LBLACK███████████$LRED███████████$LGREEN███████████$LYELLOW███████████$LBLUE███████████$LPURPLE███████████$LCYAN███████████$LWHITE███████████$RESET"
+}
+
+show_simple_colors() {
+	echo -e "$BLACK███$RED███$GREEN███$YELLOW███$BLUE███$PURPLE███$CYAN███$WHITE███"
+	echo -e "$LBLACK███$LRED███$LGREEN███$LYELLOW███$LBLUE███$LPURPLE███$LCYAN███$LWHITE███$RESET"
+}
+
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+	show_help
+elif [ "$1" =  "-s" ] || [ "$1" = "--simple" ]; then
+	show_simple_colors
+elif [ -z $1 ]; then
+	show_colors
+else
+	echo "Unknonw option: $1"
+fi
+
