@@ -1,0 +1,164 @@
+# TODO:
+# -> open files from argv
+
+import gi
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
+import re
+
+#REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b'
+REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b' # whitout hashtag
+#REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{4}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b'
+#REGEX = r'#[0-9a-fA-F]{3}(?![0-9a-fA-F])|#[0-9a-fA-F]{4}(?![0-9a-fA-F])|#[0-9a-fA-F]{6}(?![0-9a-fA-F])|#[0-9a-fA-F]{8}(?![0-9a-fA-F])'
+
+class ColorButton(Gtk.Box):
+    def __init__(self, color):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL)
+
+        self.color = color
+
+        self.drawing_area = Gtk.DrawingArea()
+        self.drawing_area.set_size_request(110, 50)
+        self.drawing_area.connect("draw", self.on_draw)
+        self.drawing_area.set_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.drawing_area.connect("button-press-event", self.on_click)
+        self.pack_start(self.drawing_area, True, True, 0)
+
+    def on_draw(self, widget, cr):
+        rgba = Gdk.RGBA()
+        if not rgba.parse(self.color): return
+
+        cr.set_source_rgb(rgba.red, rgba.green, rgba.blue)
+        cr.paint()
+
+        # Set text color to white for dark backgrounds, black for light ones
+        luminance = 0.299 * rgba.red + 0.587 * rgba.green + 0.114 * rgba.blue
+        if luminance < 0.5:
+            cr.set_source_rgb(1, 1, 1)
+        else:
+            cr.set_source_rgb(0, 0, 0)
+
+        cr.select_font_face("monospace", 0, 0)
+        cr.set_font_size(20)
+
+        xbearing, ybearing, width, height, xadvance, yadvance = cr.text_extents(self.color)
+        alloc = widget.get_allocation()
+        x = (alloc.width - width) / 2 - xbearing
+        y = (alloc.height - height) / 2 - ybearing
+        cr.move_to(x, y)
+
+        cr.show_text(self.color)
+
+    def on_click(self, widget, event):
+        if event.button == 1:
+            clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+            clipboard.set_text(self.color, 7)
+            clipboard.store()
+
+        return True
+
+class ColorScanner(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="Color Scanner")
+        self.set_default_size(800, 550)
+
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.add(main_box)
+
+        top_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        main_box.pack_start(top_box, False, True, 10)
+
+        self.open_button = Gtk.Button()
+        self.open_button.set_label("Open")
+        self.open_button.connect("clicked", self.open_button_callback)
+        top_box.pack_start(self.open_button, False, False, 10)
+
+        spacer = Gtk.Box()
+        top_box.pack_start(spacer, True, True, 0)
+
+        self.filenames_label = Gtk.Label(label="")
+        top_box.pack_start(self.filenames_label, False, False, 10)
+
+        self.color_grid = Gtk.Grid(
+            column_homogeneous=True,
+            row_homogeneous=True,
+            column_spacing=10,
+            row_spacing=10,
+            margin=10
+        )
+        main_box.pack_start(self.color_grid, False, True, 10)
+
+    def open_files(self):
+        dialog = Gtk.FileChooserDialog(
+            title="Open file...",
+            parent=self,
+            action=Gtk.FileChooserAction.OPEN
+        )
+
+        dialog.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+            Gtk.STOCK_OPEN, Gtk.ResponseType.OK
+        )
+
+        dialog.set_select_multiple(True)
+
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name("Text files")
+        filter_text.add_mime_type("text/plain")
+        dialog.add_filter(filter_text)
+
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name("All files")
+        filter_any.add_pattern("*")
+        dialog.add_filter(filter_any)
+
+        filenames = None
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filenames = dialog.get_filenames()
+        dialog.destroy()
+
+        return filenames
+
+    def search_for_colors(self, file):
+        colors = []
+
+        with open(file, "r") as f:
+            for line in f:
+                for match in re.findall(REGEX, line, re.IGNORECASE):
+                    colors.append(match)
+
+        return colors
+
+    def open_button_callback(self, widget):
+        filenames = self.open_files()
+        filenames_label_text = ""
+
+        if filenames:
+            colors = []
+
+            for filename in filenames:
+                # Get the basename of the file
+                basename = filename.split('/')
+                filenames_label_text += basename[len(basename) - 1] + ", "
+
+                colors += self.search_for_colors(filename)
+
+            filenames_label_text = filenames_label_text[:-2] # Remove the extra comma and space
+            self.filenames_label.set_label(filenames_label_text)
+
+            for child in self.color_grid.get_children():
+                self.color_grid.remove(child)
+
+            for i, color in enumerate(colors):
+                color_button = ColorButton(color)
+                self.color_grid.attach(color_button, i % 3, i // 3, 1, 1)
+
+            self.color_grid.show_all()
+
+if __name__ == "__main__":
+    win = ColorScanner()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()
