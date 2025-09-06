@@ -1,15 +1,11 @@
-# TODO:
-# -> open files from argv
+#!/usr/bin/env python3
 
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 import re
 
-#REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b'
-REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b' # whitout hashtag
-#REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{4}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b'
-#REGEX = r'#[0-9a-fA-F]{3}(?![0-9a-fA-F])|#[0-9a-fA-F]{4}(?![0-9a-fA-F])|#[0-9a-fA-F]{6}(?![0-9a-fA-F])|#[0-9a-fA-F]{8}(?![0-9a-fA-F])'
+REGEX = r'#[0-9a-fA-F]{3}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{8}\b'
 
 class ColorButton(Gtk.Box):
     def __init__(self, color):
