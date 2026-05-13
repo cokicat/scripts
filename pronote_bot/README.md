@@ -1,3 +1,5 @@
+# UNMAINTAINED
+
 # Pronote Bot
 A simple bot that checks every hour if you got a new grade on PRONOTE (a French software for managing schools) and sends it to a Telegram chat.
 

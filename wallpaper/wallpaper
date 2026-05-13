@@ -1,5 +1,7 @@
 #!/bin/sh
 
+MENU="fuzzel -d"
+
 current_dir=$(xdg-user-dir PICTURES || echo "$HOME/Pictures")
 
 list_items() {
@@ -9,29 +11,7 @@ list_items() {
 }
 
 while true; do
-	choice=$(list_items | bemenu -c \
-		-i \
-		-l 10 \
-		-p "󰸉 wallpaper" \
-		-P "󰌑" \
-		-B 2 \
-		-W 0.45 \
-		-H 30 \
-		--cw 2 \
-		--ch 20 \
-		--fn "FantasqueSansMNerdFontPropo 13" \
-		--nb "#282828" \
-		--nf "#fbf1c7" \
-		--ab "#1d2021" \
-		--af "#fbf1c7" \
-		--tb "#1d2021" \
-		--cf "#fbf1c7" \
-		--tf "#fbf1c7" \
-		--fb "#1d2021" \
-		--ff "#fbf1c7" \
-		--hb "#689d6a" \
-		--hf "#282828" \
-		--bdr "#689d6a")
+	choice=$(list_items | $MENU)
 
 	if [ -z "$choice" ]; then
 		echo "Invalid or canceled option."
