@@ -1,10 +1,13 @@
 # Wallpaper  
 A script I made for my dotfiles.  
-Choose an image from `~/Pictures` with [bemenu](https://github.com/Cloudef/bemenu), then link it to `~/wallpaper` and set it with `feh`.
+Choose an image from `~/Pictures` and set it as wallpaper.
 
-## Dependencies
-Make sure that the `feh` package is installed on your distro.
-
-## Usage  
-In your WM's config file, run `feh --bg-scale ~/wallpaper` at startup.
-
+## Configuration
+```shell
+MENU="fuzzel -d" # Set the menu to fuzzel
+WALLPAPER_COMMAND="swaybg -i" # Set the command used to change wallpaper
+```
+Make sure that the wallpaper is set at startup in your WM/compositor's config file, like:
+```shell
+swaybg -i ~/wallpaper >/dev/null 2>&1 &
+```
