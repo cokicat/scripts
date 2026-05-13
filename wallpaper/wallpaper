@@ -1,6 +1,7 @@
 #!/bin/sh
 
 MENU="fuzzel -d"
+WALLPAPER_COMMAND="swaybg -i"
 
 current_dir=$(xdg-user-dir PICTURES || echo "$HOME/Pictures")
 
@@ -23,7 +24,7 @@ while true; do
 	if [ -d "$selected_path" ]; then
 		current_dir="$selected_path"
 	elif [ -f "$selected_path" ]; then
-		feh --bg-scale "$selected_path" 
+		eval "$WALLPAPER_COMMAND" "$selected_path" 
 	   	ln -sf "$selected_path" ~/wallpaper
 
 		exit 0
